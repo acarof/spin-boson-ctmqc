@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*-
+
 from utils import *
 import numpy as np
 from itertools import product as iterprod
@@ -19,6 +22,7 @@ list_param = [
    # ['COUPLING', 1.49E-5],
     ['COUPLING', 1.49E-5, 1, 2, 3],
     ['TEMPERATURE', 9.5E-4],
+    ['FRICTION', 1.875E-5]
 ]
 
 mega_list = []
@@ -41,6 +45,7 @@ for index, dict_ in enumerate(mega_list):
     reorga = dict_['REORGA']
     coupling = dict_['COUPLING']
     temperature = dict_['TEMPERATURE']
+    friction = dict_['FRICTION']
 
     shift = np.sqrt(0.5 * reorga * mass * omega ** 2)
     minimum = shift/(mass*omega**2)
@@ -48,5 +53,20 @@ for index, dict_ in enumerate(mega_list):
 
     name_dir = 'run-ctmqc-%s' % index
     os.mkdir(name_dir)
-    write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature, path=name_dir)
+
+    for dir in ['output', 'output/histo', 'output/coeff', 'output/trajectories', 'output/density',
+                'spin_boson_surfaces_nacv', 'config_init']:
+        os.mkdir('%s/%s' % (name_dir, dir))
+
+    write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature,
+                path='%s/spin_boson_surfaces_nacv/' % name_dir)
     write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path=name_dir)
+    write_input(xpoints=len(positions), friction=friction, temperature=temperature, path=name_dir)
+
+    with open("%s/parameters.dat" % name_dir, 'w') as file_:
+        for key, value in dict_.iteritems():
+            file_.write("%s  %s\n" % (key, value))
+
+
+
+

@@ -1,5 +1,44 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*-
+
 import numpy as np
 
+
+def write_input(xpoints, friction, temperature, path):
+    results = """
+&SYSTEM
+  MODEL_POTENTIAL = 'tully_1'
+  N_DOF = 1           ! Tully s models are 1D
+  X_POINTS = %s     ! check with wc -l *_bopes.dat
+  Y_POINTS = 1
+  Z_POINTS = 1
+  NSTATES = 2
+  EL_BASIS = 'adiabatic'
+  AD_TO_DIA = 'y'
+/
+&DYNAMICS
+  FINAL_TIME = 2000.0
+  DT = 0.5
+  DUMP = 50
+  INITIAL_BOSTATE = 0
+  INITIAL_DIASTATE = 1
+  NTRAJ = 200
+  R_INIT = -10.0
+  K_INIT = 25.0
+  SIGMA_INIT = 0.0      ! if sigma = 0.0, then sigma = 20/k0 in the code
+  MASS_INPUT = 1.0
+  VISCOSITY = %s
+  TEMPERATURE = %s
+/
+&EXTERNAL_FILES
+  PATH_TO_POTENTIALS = "./spin_boson_surfaces_nacv/"
+  POSITIONS_FILE = "./config_init/positions.dat"
+  MOMENTA_FILE = "./config_init/velocities.dat"
+/
+
+    """ % (xpoints, friction, temperature, )
+    with open("%s/input.in" % path, "w") as file_:
+        file_.write(results)
 
 def write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature, path='.'):
     surf_ground = open("%s/1_bopes.dat" % path, 'w')
@@ -31,13 +70,13 @@ def write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path='.'
     mean = -minimum
     sigma = np.sqrt(temperature / (mass * omega ** 2))
     distrib = list(np.random.normal(mean, sigma, 1000))
-    with open("%s/initial_positions.dat" % path, 'w') as file_:
+    with open("%s/config_init/positions.dat" % path, 'w') as file_:
         file_.write("%s" % '\n'.join(map(str,distrib)))
 
     mean = 0.0
     sigma = np.sqrt(temperature / (mass ))
     distrib = list(np.random.normal(mean, sigma, 1000))
-    with open("%s/initial_velocities.dat" % path, 'w') as file_:
+    with open("%s/config_init/velocities.dat" % path, 'w') as file_:
         file_.write("%s" % '\n'.join(map(str,distrib)))
 
 def adiab_surfaces(position, mass, omega, epsilon_0, shift, coupling, ground):
