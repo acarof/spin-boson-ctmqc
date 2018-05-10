@@ -4,17 +4,32 @@
 import numpy as np
 
 
+def find_ctmqc_path():
+    def create_ctmqc_path():
+        print "The file ctmqc.path doesn't exist, please provide the path for ctmqc:"
+        path = raw_input('> ')
+        ctmqc_path = open('bin/ctmqc.path', 'w')
+        ctmqc_path.write(path)
+        ctmqc_path.close()
+        return open('bin/ctmqc.path', 'r')
+    try:
+        ctmqc_path = open('bin/ctmqc.path', 'r')
+    except:
+        ctmqc_path = create_ctmqc_path()
+    return ctmqc_path.readline()
+
+
 def write_input(xpoints, friction, temperature, path):
     results = """
 &SYSTEM
-  MODEL_POTENTIAL = 'tully_1'
+  MODEL_SYSTEM = 'tully_1'
   N_DOF = 1           ! Tully s models are 1D
   X_POINTS = %s     ! check with wc -l *_bopes.dat
   Y_POINTS = 1
   Z_POINTS = 1
   NSTATES = 2
   EL_BASIS = 'adiabatic'
-  AD_TO_DIA = 'y'
+  DIA_TO_AD = 'y'
 /
 &DYNAMICS
   FINAL_TIME = 2000.0
@@ -43,8 +58,8 @@ def write_input(xpoints, friction, temperature, path):
 def write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature, path='.'):
     surf_ground = open("%s/1_bopes.dat" % path, 'w')
     surf_excited = open("%s/2_bopes.dat" % path, 'w')
-    nacv_file = open("%s/nac1_12_x" % path, 'w')
-    transfo_file = open("%s/transformation_matrix.dat" % path, 'w')
+    nacv_file = open("%s/nac1-12_x" % path, 'w')
+    transfo_file = open("%s/transformation_matrix" % path, 'w')
     check_transo = open("%s/check_transfo.dat" % path, 'w')
     for position in positions:
         number = adiab_surfaces(position, mass, omega, epsilon_0, shift, coupling, True)

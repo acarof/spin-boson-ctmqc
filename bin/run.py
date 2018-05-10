@@ -4,7 +4,8 @@
 from utils import *
 import numpy as np
 from itertools import product as iterprod
-import os
+import os, time
+import subprocess
 
 mass = 1
 omega = 3.5E-4
@@ -14,13 +15,16 @@ shift = np.sqrt( 0.5*reorga*mass*omega**2 )
 coupling = 1.49E-5
 temperature = 9.5E-4
 
+ctmqc = find_ctmqc_path()
+
+
 list_param = [
     ['MASS', 1],
-    ['OMEGA', 3.5E-4, 1000],
+    ['OMEGA', 3.5E-4],
     ['EPSILON_0', 1.5E-2],
     ['REORGA', 2.39E-2],
    # ['COUPLING', 1.49E-5],
-    ['COUPLING', 1.49E-5, 1, 2, 3],
+    ['COUPLING', 1.49E-5, 1.49E-4],
     ['TEMPERATURE', 9.5E-4],
     ['FRICTION', 1.875E-5]
 ]
@@ -66,6 +70,26 @@ for index, dict_ in enumerate(mega_list):
     with open("%s/parameters.dat" % name_dir, 'w') as file_:
         for key, value in dict_.iteritems():
             file_.write("%s  %s\n" % (key, value))
+
+    os.chdir(name_dir)
+
+    complete_time = time.strftime("%y%m%d%H%M%S", time.localtime())
+    # This section sets up a list with the aprun command
+    runcommand = []
+    print "CTMQC STARTS AT: " + complete_time
+    execName = ctmqc
+    #inputName = "run.inp"
+    #outputName = "run.log"
+    # Add executable name to the command
+    runcommand.append(execName)
+    #runcommand += ['-i', inputName]
+    print runcommand
+    #logFile = open(outputName, 'w')
+    inFile = open("input.in")
+    stderr = subprocess.call(runcommand, stdin=inFile,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    os.chdir('..')
+
 
 
 
