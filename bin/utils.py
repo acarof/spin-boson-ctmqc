@@ -19,10 +19,10 @@ def find_ctmqc_path():
     return ctmqc_path.readline()
 
 
-def write_input(xpoints, friction, temperature, path):
+def write_input(xpoints, friction, temperature, path, model, algorithm, final_time, dt, dump, ntraj):
     results = """
 &SYSTEM
-  MODEL_SYSTEM = 'marcus'
+  MODEL_SYSTEM = '%s'
   N_DOF = 1           ! Tully s models are 1D
   X_POINTS = %s     ! check with wc -l *_bopes.dat
   Y_POINTS = 1
@@ -32,13 +32,13 @@ def write_input(xpoints, friction, temperature, path):
   DIA_TO_AD = 'y'
 /
 &DYNAMICS
-  ALGORITHM = 'CTMQC' ! Ehrenfest, CTeMQC
-  FINAL_TIME = 2000.0
-  DT = 0.5
-  DUMP = 50
+  ALGORITHM = '%s' ! Ehrenfest, CTeMQC
+  FINAL_TIME = %s
+  DT = %s
+  DUMP = %s
   INITIAL_BOSTATE = 0
   INITIAL_DIASTATE = 1
-  NTRAJ = 200
+  NTRAJ = %s
   R_INIT = -10.0
   K_INIT = 25.0
   SIGMA_INIT = 0.0      ! if sigma = 0.0, then sigma = 20/k0 in the code
@@ -52,7 +52,7 @@ def write_input(xpoints, friction, temperature, path):
   MOMENTA_FILE = "./config_init/velocities.dat"
 /
 
-    """ % (xpoints, friction, temperature, )
+    """ % ( model, xpoints, algorithm, final_time, dt, dump, ntraj,  friction, temperature,)
     with open("%s/input.in" % path, "w") as file_:
         file_.write(results)
 
@@ -82,15 +82,16 @@ def write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature,
     check_transo.close()
 
 def write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path='.'):
+    k_b = 0.00000316679085
     minimum = shift / (mass * omega ** 2)
     mean = -minimum
-    sigma = np.sqrt(temperature / (mass * omega ** 2))
+    sigma = np.sqrt(k_b*temperature / (mass * omega ** 2))
     distrib = list(np.random.normal(mean, sigma, 1000))
     with open("%s/config_init/positions.dat" % path, 'w') as file_:
         file_.write("%s" % '\n'.join(map(str,distrib)))
 
     mean = 0.0
-    sigma = np.sqrt(temperature / (mass ))
+    sigma = np.sqrt(k_b*temperature / (mass ))
     distrib = list(np.random.normal(mean, sigma, 1000))
     with open("%s/config_init/velocities.dat" % path, 'w') as file_:
         file_.write("%s" % '\n'.join(map(str,distrib)))
