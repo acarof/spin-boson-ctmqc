@@ -7,14 +7,6 @@ from itertools import product as iterprod
 import os, time, sys, random
 import subprocess, hashlib
 
-mass = 1
-omega = 3.5E-4
-epsilon_0 = 1.5E-2
-reorga = 2.39E-2
-shift = np.sqrt( 0.5*reorga*mass*omega**2 )
-coupling = 1.49E-5
-temperature = 9.5E-4
-
 ctmqc = find_ctmqc_path()
 
 
@@ -26,7 +18,13 @@ list_param = [
     ['COUPLING', 2.28E-4],
     # ['COUPLING', 1.49E-5, 1.49E-4],
     ['TEMPERATURE', 300.0],
-    ['FRICTION', 0.00240]
+    ['VISCOSITY', 0.00240],
+    ['MODEL', 'marcus'],
+    ['ALGORITHM', 'CTMQC'],  # CTeMQC, EHRENFEST
+    ['FINAL_TIME', 10000],
+    ['DT', 0.5],
+    ['DUMP', 50],
+    ['NTRAJ', 200]
 ]
 
 mega_list = []
@@ -57,7 +55,13 @@ def run_ctmqc(dict_):
     reorga = dict_['REORGA']
     coupling = dict_['COUPLING']
     temperature = dict_['TEMPERATURE']
-    friction = dict_['FRICTION']
+    friction = dict_['VISCOSITY']
+    model = dict_['MODEL']
+    algorithm = dict_['ALGORITHM']
+    final_time = dict_['FINAL_TIME']
+    dt = dict_['DT']
+    dump = dict_['DUMP']
+    ntraj  = dict_['NTRAJ']
 
     shift = np.sqrt(0.5 * reorga * mass * omega ** 2)
     minimum = 700 + shift/(mass*omega**2)
@@ -73,7 +77,8 @@ def run_ctmqc(dict_):
     write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature,
                 path='%s/spin_boson_surfaces_nacv/' % name_dir)
     write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path=name_dir)
-    write_input(xpoints=len(positions), friction=friction, temperature=temperature, path=name_dir)
+    write_input(xpoints=len(positions), friction=friction, temperature=temperature, path=name_dir,
+                model=model, algorithm=algorithm, final_time=final_time, dt=dt, dump=dump, ntraj=ntraj)
 
     with open("%s/parameters.dat" % name_dir, 'w') as file_:
         for key, value in dict_.iteritems():
