@@ -4,8 +4,8 @@
 from utils import *
 import numpy as np
 from itertools import product as iterprod
-import os, time
-import subprocess
+import os, time, sys, random
+import subprocess, hashlib
 
 mass = 1
 omega = 3.5E-4
@@ -42,7 +42,15 @@ for sublist in total_list:
 print len(mega_list)
 
 
-for index, dict_ in enumerate(mega_list):
+def get_md5name():
+    complete_time = time.strftime("%y%m%d%H%M%S", time.localtime())
+    md5 = hashlib.md5()
+    md5.update(complete_time + "%s" % random.randint(1, 1E9))
+    md5name = md5.hexdigest()
+    return md5name
+
+
+def run_ctmqc(dict_):
     mass = dict_['MASS']
     omega = dict_['OMEGA']
     epsilon_0 = dict_['EPSILON_0']
@@ -55,7 +63,7 @@ for index, dict_ in enumerate(mega_list):
     minimum = shift/(mass*omega**2)
     positions = np.arange(-2*minimum,2*minimum,0.1)
 
-    name_dir = 'run-ctmqc-%s' % index
+    name_dir = 'run-ctmqc-%s' % get_md5name()
     os.mkdir(name_dir)
 
     for dir in ['output', 'output/histo', 'output/coeff', 'output/trajectories', 'output/density',
@@ -89,6 +97,29 @@ for index, dict_ in enumerate(mega_list):
     stderr = subprocess.call(runcommand, stdin=inFile,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     os.chdir('..')
+
+# RUN THE CALCULATIONS, SERIE OR PARALLEL ACCORDING TO THE NWORKER VARIABLE
+try:
+    nworker = int(sys.argv[1])
+except:
+    nworker = 1
+
+print "nworker is %s" % nworker
+
+if nworker == 1:
+    print 'Use serial'
+    for dict_ in mega_list:
+        run_ctmqc(dict_)
+elif nworker == 0:
+    from multiprocessing import Pool, cpu_count
+    pool = Pool(cpu_count())
+    print 'Use parallel with %s processors' % cpu_count()
+    pool.map(run_ctmqc, mega_list)
+elif nworker > 1:
+    from multiprocessing import Pool
+    pool = Pool(nworker)
+    print 'Use parallel with %s processors' % nworker
+    pool.map(run_ctmqc, mega_list)
 
 
 

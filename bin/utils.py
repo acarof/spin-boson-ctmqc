@@ -22,7 +22,7 @@ def find_ctmqc_path():
 def write_input(xpoints, friction, temperature, path):
     results = """
 &SYSTEM
-  MODEL_SYSTEM = 'tully_1'
+  MODEL_SYSTEM = 'marcus'
   N_DOF = 1           ! Tully s models are 1D
   X_POINTS = %s     ! check with wc -l *_bopes.dat
   Y_POINTS = 1
