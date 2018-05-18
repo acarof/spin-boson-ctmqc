@@ -21,12 +21,12 @@ ctmqc = find_ctmqc_path()
 list_param = [
     ['MASS', 1],
     ['OMEGA', 3.5E-4],
-    ['EPSILON_0', 1.5E-2],
+    ['EPSILON_0', 0], #1.5E-2],
     ['REORGA', 2.39E-2],
-   # ['COUPLING', 1.49E-5],
-    ['COUPLING', 1.49E-5, 1.49E-4],
-    ['TEMPERATURE', 9.5E-4],
-    ['FRICTION', 1.875E-5]
+    ['COUPLING', 2.28E-4],
+    # ['COUPLING', 1.49E-5, 1.49E-4],
+    ['TEMPERATURE', 300.0],
+    ['FRICTION', 0.00240]
 ]
 
 mega_list = []
@@ -60,7 +60,7 @@ def run_ctmqc(dict_):
     friction = dict_['FRICTION']
 
     shift = np.sqrt(0.5 * reorga * mass * omega ** 2)
-    minimum = shift/(mass*omega**2)
+    minimum = 700 + shift/(mass*omega**2)
     positions = np.arange(-2*minimum,2*minimum,0.1)
 
     name_dir = 'run-ctmqc-%s' % get_md5name()

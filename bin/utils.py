@@ -32,6 +32,7 @@ def write_input(xpoints, friction, temperature, path):
   DIA_TO_AD = 'y'
 /
 &DYNAMICS
+  ALGORITHM = 'CTMQC' ! Ehrenfest, CTeMQC
   FINAL_TIME = 2000.0
   DT = 0.5
   DUMP = 50
