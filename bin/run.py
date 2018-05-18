@@ -15,16 +15,16 @@ list_param = [
     ['OMEGA', 3.5E-4],
     ['EPSILON_0', 0], #1.5E-2],
     ['REORGA', 2.39E-2],
-    ['COUPLING', 2.28E-4],
+    ['COUPLING', 1.49E-5, 2.28E-4],
     # ['COUPLING', 1.49E-5, 1.49E-4],
     ['TEMPERATURE', 300.0],
     ['VISCOSITY', 0.00240],
     ['MODEL', 'marcus'],
     ['ALGORITHM', 'CTMQC'],  # CTeMQC, EHRENFEST
-    ['FINAL_TIME', 10000],
-    ['DT', 0.5],
+    ['FINAL_TIME', 10000000],
+    ['DT', 10],
     ['DUMP', 50],
-    ['NTRAJ', 200]
+    ['NTRAJ', 100]
 ]
 
 mega_list = []
