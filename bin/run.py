@@ -48,10 +48,11 @@ def run_ctmqc(dict_):
     dt = dict_['DT']
     dump = dict_['DUMP']
     ntraj  = dict_['NTRAJ']
+    grid = dict_.get('GRID', 0.1)
 
     shift = np.sqrt(0.5 * reorga * mass * omega ** 2)
     minimum = shift/(mass*omega**2)
-    positions = np.arange(-4*minimum,4*minimum,0.1)
+    positions = np.arange(-4*minimum,4*minimum, grid)
 
     name_dir = 'run-ctmqc-%s' % get_md5name()
     os.mkdir(name_dir)
