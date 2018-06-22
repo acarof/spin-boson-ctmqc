@@ -22,6 +22,9 @@ for sublist in total_list:
         subdict.update({
             list_param[index][0]: sublist[index]
         })
+    subdict.update({
+        'SEED' : np.random.randint(1E9)
+    })
     mega_list.append(subdict)
 print len(mega_list)
 
@@ -49,6 +52,7 @@ def run_ctmqc(dict_):
     dump = dict_['DUMP']
     ntraj  = dict_['NTRAJ']
     grid = dict_.get('GRID', 0.1)
+    seed = dict_['SEED']
 
     shift = np.sqrt(0.5 * reorga * mass * omega ** 2)
     minimum = shift/(mass*omega**2)
@@ -63,7 +67,7 @@ def run_ctmqc(dict_):
 
     write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature,
                 path='%s/spin_boson_surfaces_nacv/' % name_dir)
-    write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path=name_dir)
+    write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path=name_dir, seed=seed)
     write_input(xpoints=len(positions), friction=friction, temperature=temperature, path=name_dir,
                 model=model, algorithm=algorithm, final_time=final_time, dt=dt, dump=dump, ntraj=ntraj)
 

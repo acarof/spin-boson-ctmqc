@@ -81,7 +81,8 @@ def write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature,
     transfo_file.close()
     check_transo.close()
 
-def write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path='.'):
+def write_initial(mass, omega, epsilon_0, shift, coupling, temperature, path='.', seed=0):
+    np.random.seed(seed)
     k_b = 0.00000316679085
     minimum = shift / (mass * omega ** 2)
     mean = -minimum
