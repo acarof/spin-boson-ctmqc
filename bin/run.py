@@ -90,8 +90,9 @@ def run_ctmqc(dict_):
     print runcommand
     #logFile = open(outputName, 'w')
     inFile = open("input.in")
+    outFile = open("output.log", "w")
     stderr = subprocess.call(runcommand, stdin=inFile,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                             stdout=outFile, stderr=subprocess.PIPE)
     os.chdir('..')
 
 # RUN THE CALCULATIONS, SERIE OR PARALLEL ACCORDING TO THE NWORKER VARIABLE
