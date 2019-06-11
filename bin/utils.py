@@ -68,6 +68,7 @@ def write_files(positions, mass, omega, epsilon_0, shift, coupling, temperature,
         number = adiab_surfaces(position, mass, omega, epsilon_0, shift, coupling, False)
         surf_excited.write("%s  %s\n" % (number, position))
         number = nacv(position, mass, omega, epsilon_0, shift, coupling)
+        number = 0.0
         nacv_file.write("%s  %s\n" % (number, position))
         f1 = transfo_matrix(position, mass, omega, epsilon_0, shift, coupling, "f1")
         f2 = transfo_matrix(position, mass, omega, epsilon_0, shift, coupling, "f2")
@@ -106,6 +107,8 @@ def adiab_surfaces(position, mass, omega, epsilon_0, shift, coupling, ground):
     ener +=  - 0.5*epsilon_0
     root = np.sqrt((0.5*epsilon_0 + shift*position)**2 + coupling**2)
     ener += sign*root
+    if not ground:
+       ener += 1.0
     return ener
 
 def nacv(position, mass, omega, epsilon_0, shift, coupling):

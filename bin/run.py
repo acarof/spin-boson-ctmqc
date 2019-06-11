@@ -56,7 +56,7 @@ def run_ctmqc(dict_):
 
     shift = np.sqrt(0.5 * reorga * mass * omega ** 2)
     minimum = shift/(mass*omega**2)
-    positions = np.arange(-4*minimum,4*minimum, grid)
+    positions = np.arange(-10*minimum,10*minimum, grid)
 
     name_dir = 'run-ctmqc-%s' % get_md5name()
     os.mkdir(name_dir)
